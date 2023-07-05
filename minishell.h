@@ -6,7 +6,7 @@
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 00:33:59 by acanelas          #+#    #+#             */
-/*   Updated: 2023/06/23 02:01:22 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/07/05 03:32:39 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <errno.h>
 # include <stdbool.h>
 
+
 typedef struct s_args
 {
 	char			**av;
@@ -33,7 +34,7 @@ typedef struct s_varb
 	char		*var_name;
 	char		*var_value;
 	bool		is_exported;
-	struct s_var	*next;
+	struct s_varb	*next;
 }				t_varb;
 
 typedef struct s_info
@@ -45,6 +46,7 @@ typedef struct s_info
 }			t_info;
 
 t_varb	*create_var_list(char *name, char *value);
-
+void	warm_up_shell(char **envp, t_info *info);
+void	define_signals(void);
 
 #endif
