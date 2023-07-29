@@ -6,7 +6,7 @@
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 04:07:04 by acanelas          #+#    #+#             */
-/*   Updated: 2023/07/29 03:37:45 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/07/29 04:11:06 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 bool	check_quotes(char *str)
 {
 	int	i;
-	int	is_found;
+	int	is_found; fuck you
 	char	quote;
 
 	i = 0;
