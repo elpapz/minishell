@@ -6,7 +6,7 @@
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 00:33:59 by acanelas          #+#    #+#             */
-/*   Updated: 2023/07/05 03:32:39 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/07/13 02:11:04 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,5 +48,6 @@ typedef struct s_info
 t_varb	*create_var_list(char *name, char *value);
 void	warm_up_shell(char **envp, t_info *info);
 void	define_signals(void);
+void	check_input(char *input, t_info *info);
 
 #endif

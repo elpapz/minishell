@@ -6,14 +6,16 @@
 #    By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/19 00:38:37 by acanelas          #+#    #+#              #
-#    Updated: 2023/06/19 00:55:58 by acanelas         ###   ########.fr        #
+#    Updated: 2023/07/05 06:15:04 by acanelas         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 
 
-SRC =	
-		main.c
+SRC = srcs/warm_up_shell.c\
+		srcs/utils.c\
+		srcs/check_input.c\
+		srcs/main.c
 
 NAME = minishell
 CC = cc
