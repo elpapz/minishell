@@ -6,11 +6,11 @@
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 04:21:38 by acanelas          #+#    #+#             */
-/*   Updated: 2023/07/05 03:17:10 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/08/10 06:11:50 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define _POSIX_C_SOURCE
+//#define _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE >= 199309L
 #define _GNU_SOURCE
 
@@ -56,25 +56,25 @@ char	**divide_envp(char *str)
 	
 }
 
-void	fill_envp_list(char **envp, t_info *info)
+t_varb	*fill_envp_list(char **envp)
 {
 	t_varb	*head;
 	t_varb	*temp;
-	char	**var_line;
+	char	**var_lines;
 	int	i;
 
-	var_line = divide_envp(envp[0]);
-	head = create_var_list(var_line[0], var_line[1]);
+	var_lines = divide_envp(envp[0]);
+	head = create_var_list(var_lines[0], var_lines[1]);
 	i = 0;
 	temp = head;
 	while (envp[++i])
 	{
-		free(var_line);
-		var_line = divide_envp(envp[i]);
-		temp->next = create_var_list(var_line[0], var_line[1]);
+		free(var_lines);
+		var_lines = divide_envp(envp[i]);
+		temp->next = create_var_list(var_lines[0], var_lines[1]);
 		temp = temp->next;
 	}
-	free (var_line);
+	free (var_lines);
 	return (head);
 }
 
@@ -82,6 +82,6 @@ void	fill_envp_list(char **envp, t_info *info)
 void	warm_up_shell(char **envp, t_info *info)
 {
 	info->envp = envp;
-	fill_envp_list(envp, info);
-	rl_clear_history();
+	info->evnp_lst = fill_envp_list(envp);
+	//rl_clear_history();
 }

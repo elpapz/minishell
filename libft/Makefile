@@ -6,12 +6,13 @@
 #    By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/31 22:00:59 by acanelas          #+#    #+#              #
-#    Updated: 2022/12/24 00:09:33 by acanelas         ###   ########.fr        #
+#    Updated: 2023/08/09 22:47:19 by acanelas         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 
 SRC =		ft_tolower.c \
+			ft_split.c \
 			ft_toupper.c \
 			ft_isalnum.c \
 			ft_isalpha.c \

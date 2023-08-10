@@ -6,7 +6,7 @@
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 04:19:38 by acanelas          #+#    #+#             */
-/*   Updated: 2023/07/29 03:36:47 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/08/10 06:25:14 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,44 +15,41 @@
 long long	g_exit_status = 0;
 
 
-char	*input_prompt(t_info *info)
+char	*input_prompt()
 {
 	char	*input;
-
-	input = readline("Minishell> ");
-	if (input == NULL)
-	{
-		free(input);
-		return (0);
-	}
 	char	*temp;
 	
+	input = readline("Minishell> ");
 	temp = ft_strtrim(input, " \t");
-	free(temp);
+	printf("%s\n", temp);
+	//free(temp);
 	return (temp);
 }
 
-void	running(t_info *info)
+void	running()
 {
 	char	*line;
 
 	define_signals();
-	line = input_prompt(&info);
+	line = input_prompt();
 	// a faltar o control_d!
-	check_input(line, &info);
+	printf("%s\n", line);
+	//check_input(line);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_info	info;
+	t_info	*info;
 
 	(void)argc;
 	(void)argv;
-	warm_up_shell(envp, &info);
-	while (1)
-	{
-		running(&info);
-	}
+	info = malloc(sizeof(t_info));
+	if (!info)
+		return (0);
+	warm_up_shell(envp, info);
+	running();
+
 
 	
 }

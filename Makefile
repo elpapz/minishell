@@ -6,7 +6,7 @@
 #    By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/19 00:38:37 by acanelas          #+#    #+#              #
-#    Updated: 2023/07/05 06:15:04 by acanelas         ###   ########.fr        #
+#    Updated: 2023/08/10 05:37:30 by acanelas         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,6 @@ NAME = minishell
 CC = cc
 CLINE = -lreadline
 CFLAGS = -Wall -Wextra -Werror
-CLEAKS = -Wall -Wextra -Werror -fsanitize=adress
 REMOVE = rm -rf
 LIBFT = ./libft/libft.a
 OBF = $(SRC:.c=.o)

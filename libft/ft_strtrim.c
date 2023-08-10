@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strtrim_normOK.c                                :+:      :+:    :+:   */
+/*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/02 00:45:48 by acanelas          #+#    #+#             */
-/*   Updated: 2022/11/09 06:30:20 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/08/10 06:29:05 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,3 +113,12 @@ char	*ft_strtrim(char const *s1, char const *set)
 	trimmed = ft_substr(s1, inicio, final - inicio);
 	return (trimmed);
 }
+
+/*
+int		main(void)
+{
+	char *s1 = " 		  cd Desktop 	";
+	char *s2 = " \t";
+	printf("%s", ft_strtrim(s1, s2));
+}
+*/
