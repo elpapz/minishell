@@ -6,7 +6,7 @@
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 04:19:38 by acanelas          #+#    #+#             */
-/*   Updated: 2023/08/10 06:25:14 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/08/11 02:05:58 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ char	*input_prompt()
 	
 	input = readline("Minishell> ");
 	temp = ft_strtrim(input, " \t");
-	printf("%s\n", temp);
+	//printf("%s\n", temp);
 	//free(temp);
 	return (temp);
 }
@@ -34,8 +34,8 @@ void	running()
 	define_signals();
 	line = input_prompt();
 	// a faltar o control_d!
-	printf("%s\n", line);
-	//check_input(line);
+	//printf("%s\n", line);
+	check_input(line);
 }
 
 int	main(int argc, char **argv, char **envp)
