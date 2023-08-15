@@ -6,7 +6,7 @@
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/05 04:07:04 by acanelas          #+#    #+#             */
-/*   Updated: 2023/08/11 05:53:56 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/08/15 06:14:54 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,18 +143,70 @@ char	*remove_double_quotes(char *str)
 	return (quotes_free);
 }
 
-void	check_input(char *input)
+bool	invalid_operator(char *str)
 {
-	if (input[0] == '\0')
+	int	i;
+
+	i = 0;
+	while (str[i])
 	{
-		free(input);
-		return ;
+		if ((str[i] == '>' && str[i + 1] == '<')
+			|| (str[i] == '<' && str[i + 1] == '>')
+			|| (str[i] == '|' && str[i + 1] == '|'))
+				return (true);
+		else if (str[i] == '{' || str[i] == '}'
+			|| str[i] == '(' || str[i] == ')'
+			|| str[i] == '[' || str[i] == ']'
+			|| str[i] == ';' || str[i] == '&' || str[i] == '*')
+				return (true);
+	i++;
 	}
+	return (false);
+}
+
+bool	check_around_quotes(char *str)
+{
+	
+}
+
+bool	wrong_input(char *str)
+{
+		int	i;
+
+		i = -1;
+		if (is_there_quotes(str) == false)
+		{
+			while (str[++i])
+			{
+				if ((str[i] == '>' && str[i + 1] == '<')
+					|| (str[i] == '<' && str[i + 1] == '>')
+					|| (str[i] == '|' && str[i + 1] == '|'))
+						return (true);
+				else if (str[i] == '{' || str[i] == '}'
+					|| str[i] == '(' || str[i] == ')'
+					|| str[i] == '[' || str[i] == ']'
+					|| str[i] == ';' || str[i] == '&' || str[i] == '*')
+						return (true);
+			}
+		}
+		else
+			if (check_around_quotes(str))
+				return (true);
+		return (false);
+}
+
+bool	check_input(char *input)
+{
 	if (check_quotes(input) == false)
 	{
-		ft_putstr_fd("unclosed quotes\n", STDERR_FILENO);
+		ft_putstr_fd("unclosed quotes, seu cachorro\n", STDERR_FILENO);
 		//printf("FODASSE\n");
-		return ;
+		return (false);
+	}
+	if (wrong_input == true)
+	{
+		ft_putstr_fd("bad input, seu FDP\n", STDERR_FILENO);
+		return (false);
 	}
 	
 }
