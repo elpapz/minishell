@@ -62,8 +62,8 @@ int main(int ac, char **av, char **envp)
 		else
 		{
 			add_history(input);
-			/*tokens divididos por: ' ' por: '\t e pela existencia de quotes: done
-			munanças estao no tokens.c, o tester é a funcao print_tokens*/
+			/*tokens divididos por: ' ' por: '\t e pela existencia de quotes: done!!!
+			Mudanças estao no tokens.c, o tester é a funcao print_tokens*/
 			data->tokens_head = get_tokens(data, input);
 			print_tokens(data->tokens_head);
 			//data->check_in = false;
