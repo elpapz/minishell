@@ -10,5 +10,4 @@ void print_env(t_data *data)
 		ft_printf("%s=%s\n",temp_var->var_name,temp_var->var_value);
 		temp_var = temp_var->next;
 	}
-
 }

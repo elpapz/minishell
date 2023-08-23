@@ -24,6 +24,16 @@ void	cntr_d(char *input, t_data **data)
 	}
 }
 
+void	print_tokens(t_tokens *head)
+{
+	t_tokens	*tmp = head;
+	while (tmp->next != NULL)
+	{
+		printf("%s\n", tmp->command);
+		tmp = tmp->next;
+	}
+}
+
 int main(int ac, char **av, char **envp)
 {
 	t_data *data;
@@ -52,14 +62,14 @@ int main(int ac, char **av, char **envp)
 		else
 		{
 			add_history(input);
-			data->tokens_head = tokens_input(input,data);
+			/*tokens divididos por: ' ' por: '\t e pela existencia de quotes: done
+			munanças estao no tokens.c, o tester é a funcao print_tokens*/
+			data->tokens_head = get_tokens(data, input);
+			print_tokens(data->tokens_head);
 			//data->check_in = false;
-			printf("%s\n", data->tokens_head->command);
 			if(!strncmp(data->tokens_head->command,"exit",4))
-			{// dar handle as quotes no head->command(no caso de haver)
-			 // secalhar mais vale incluirmos isto no parser e depois de checkar se tem quotes
-			 // se tiver, removemos as quotes e tratamos como um exit normal
-			 // quem diz o exit, qualquer comando que venha com quotes, temos de dar handle na mesma!
+			{/*preciso retirar as quotes aos tokens e checkar se os tokens em sim sâo validos
+			ou nao, expansiveis ou nao e tratar disso*/
 				free_data(&data);
 				free_tokens(data); // dá segfault quando escrevo exit, se tirar esta funcao daqui ja não dá segfault!
 				break;
@@ -67,6 +77,7 @@ int main(int ac, char **av, char **envp)
 			exec_tokens(data);
 			unlink(TEMP_FILE);
 			free_tokens(data);
+			
 		}
 	}
 	return 0;

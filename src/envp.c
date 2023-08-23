@@ -11,7 +11,7 @@ void add_list(t_data *data,t_varlst *temp_var)
 	else
 	{
 		atual = data->var_head;
-		while(atual->next != NULL)
+		while (atual->next != NULL)
 			atual = atual->next;
 		atual->next = temp_var;
 	}
@@ -74,7 +74,7 @@ void change_env(t_data *data, char **input)
 		{
 			temp_var = malloc(sizeof(t_varlst));
 			if(!temp_var)
-				error(MALLOC,NULL);
+				error(MALLOC,'\0');
 			command = ft_split(input[j],'=');
 			if(check_exist_env(data,command[0]))
 				change_exist_env(data,command);

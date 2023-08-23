@@ -136,7 +136,8 @@ void ft_execve(char **command,t_data *data);
 void exec_tokens(t_data *data);
 
 t_tokens *tokens_input(char *input,t_data *data);
-void add_token(t_tokens **head,char *str,t_type type);
+t_tokens	*get_tokens(t_data *data, char *str);
+int add_token(t_tokens **head,char *str,t_type type);
 
 void free_tokens(t_data *data);
 
