@@ -18,7 +18,7 @@ int add_token(t_tokens **head, char *str,t_type type)
     if (!new_token)
         return (-1);
     //new_token->command = ft_strdup(str); //tambem dá com ft_strdup
-	new_token->command = str;
+	new_token->command = str; //só é preciso dar free uma vez
 	new_token->type = type;
     new_token->next = NULL;
 
@@ -81,6 +81,39 @@ int	get_word_until(char *str, int i, t_tokens **head)
 	return (i);
 }
 
+
+void	remove_head_quotes(t_tokens *head)
+{
+	//int	i;
+
+	//i = 0;
+	if (is_there_quotes(head->command))
+	{
+		if (head->command[0] == '\'')
+			head->command = remove_single_quotes(head->command);
+		else if (head->command[0] == '"')
+			head->command = remove_double_quotes(head->command);
+	}
+	else
+		return ;
+}
+
+
+void	remove_quotes(t_tokens *head)
+{
+	//int i = 0;
+	while (head != NULL)
+	{
+		if (is_there_quotes(head->command))
+		{
+			if (head->command[0] == '\'')
+			head->command = remove_single_quotes(head->command);
+		else if (head->command[0] == '"')
+			head->command = remove_double_quotes(head->command);
+		}
+		head = head->next;
+	}
+}
 t_tokens	*get_tokens(t_data *data, char *str)
 {
 	int	i;
@@ -96,8 +129,10 @@ t_tokens	*get_tokens(t_data *data, char *str)
 			i = get_word_until(str, i, &data->tokens_head);
 		if (i < 0)
 			return (NULL);
+		//remove_head_quotes(data->tokens_head); //remove the quotes only from the first token(command)
 		i++;
 	}
+	remove_quotes(data->tokens_head); //remove the quotes from all the tokens(commands)
 	return (data->tokens_head);
 }
 

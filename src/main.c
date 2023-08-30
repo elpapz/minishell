@@ -27,7 +27,7 @@ void	cntr_d(char *input, t_data **data)
 void	print_tokens(t_tokens *head)
 {
 	t_tokens	*tmp = head;
-	while (tmp->next != NULL)
+	while (tmp != NULL)
 	{
 		printf("%s\n", tmp->command);
 		tmp = tmp->next;

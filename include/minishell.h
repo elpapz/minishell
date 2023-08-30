@@ -124,6 +124,8 @@ char *ft_mllstrcpy(char *str);
 
 void exec_unset(t_data *data, char **input);
 
+char	*remove_double_quotes(char *str);
+char	*remove_single_quotes(char *str);
 int search_envp(t_data *data, char *cmd);
 void exec_echo(t_data *data, char **input);
 void check_exec(t_data *data, char *input);
