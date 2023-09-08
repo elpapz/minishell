@@ -6,37 +6,31 @@
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 16:16:58 by icaldas           #+#    #+#             */
-/*   Updated: 2023/09/08 06:26:48 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/09/08 10:06:30 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-int	get_unquoted_size(char *str)
+extern volatile long long g_exit_status;
+
+int	get_unquoted_size(char *str, char quote)
 {
-	int	start;
+	int	len;
 	int	i;
 
 	i = 0;
-	if (str[i] == '"')
+	len = 0;
+	while (str[i])
 	{
-		while (str[i] == '"')
-			i++;
-		start = i;
-		while (str[i] != '"')
-			i++;
-		return (i - start);
+		if (str[i] != quote)
+			len++;
+		i++;
 	}
-	else if (str[i] == '\'')
-	{
-		while (str[i] == '\'')
-			i++;
-		start = i;
-		while (str[i] != '\'')
-			i++;
-		return (i - start);
-	}
+	return (len);
+
 }
+
 
 char	*remove_single_quotes(char *str)
 {
@@ -46,7 +40,7 @@ char	*remove_single_quotes(char *str)
 
 	i = 0;
 	j = 0;
-	int size = get_unquoted_size(str);
+	int size = get_unquoted_size(str, '\'');
 	//printf("%d\n", size);
 	quotes_free = malloc(sizeof(char) * size + 1);
 	while (str[i])
@@ -74,7 +68,7 @@ char	*remove_double_quotes(char *str)
 
 	i = 0;
 	j = 0;
-	int size = get_unquoted_size(str);
+	int size = get_unquoted_size(str, '"');
 	//printf("%d\n", size);
 	quotes_free = malloc(sizeof(char) * size + 1);
 	while (str[i])
@@ -146,7 +140,7 @@ int add_token(t_tokens **head, char *str,t_type type)
 			temp = temp->next;
 		temp->next = new_token;
 	}
-	printf("token ->%s\n", new_token->command);
+	//printf("token ->%s\n", new_token->command);
 	return (0);
 }
 //RDR_RD_IN
@@ -197,8 +191,115 @@ int	get_word_until(char *str, int i, t_tokens **head)
 	return (i);
 }
 
+char	*get_path(char *input, int *i)
+{
+	int		len;
+	int		i_temp;
+	char	*temp;
 
-void	remove_head_quotes(t_tokens *head)
+	i_temp = *i;
+	temp = malloc(sizeof(char) * (i_temp - *i + 1));
+	len = 0;
+	(*i)++;
+	while (input[i_temp] && isalnum(input[i_temp]))
+		i_temp++;
+	while (input[*i] && isalnum(input[*i]))
+	{
+		temp[len] = input[*i];
+		(*i)++;
+		len++;
+	}
+	temp[len] = '\0';
+	return (temp);
+}
+int	get_len_path(char *input, t_data *data)
+{
+	int		len;
+	int		i;
+	char	*temp_path;
+
+	len = 0;
+	i = 0;
+	while (input[i])
+	{
+		if (input[i] == '$')
+		{
+			temp_path = get_path(input, &i);
+			temp_path = ft_getenv(temp_path, data);
+			len += ft_strlen(temp_path);
+			free(temp_path);
+		}
+		else
+		{
+			len++;
+			i++;
+		}
+	}
+	return (len + 1);
+}
+
+
+char	*get_path_input(char *input, t_data *data)
+{
+    int		i;
+	int		len;
+	int		i_temp;
+	char	*temp_path;
+	char	*temp_input;
+
+	i = 0;
+	len = get_len_path(input, data);
+	temp_input = malloc(sizeof(char) * len);
+	len = 0;
+	while (input[i])
+	{
+		if(input[i] == '$' && input[i+1] == '?'
+			&& input[0] != '\'')
+			{
+				char *temp_int;
+				int i_int_temp = 0;
+
+				temp_int = ft_itoa(g_exit_status);
+				while(temp_int[i_int_temp])
+				{
+					temp_input[len] = temp_int[i_int_temp];
+					i_int_temp++;
+					len++;
+				}
+				i += 2;
+				free(temp_int);
+			}
+		else if(input[i] == '$' && !ft_isalnum(input[i+1]))
+		{
+			temp_input[len++] = '$';
+			i++;
+		}
+		else if (input[i] == '$' && input[0] != '\'')
+		{
+			temp_path = get_path(input, &i);
+			temp_path = ft_getenv(temp_path, data);
+			i_temp = 0;
+			while (temp_path[i_temp])
+			{
+				temp_input[len] = temp_path[i_temp];
+				i_temp++;
+				len++;
+			}
+			free(temp_path);
+		}
+		else
+		{
+			temp_input[len] = input[i];
+			len++;
+			i++;
+		}
+	}
+	temp_input[len] = 0;
+	return (temp_input);
+}
+
+
+void	remove_head_quotes(t_tokens *head,t_data *data)
 {
 	//int	i;
 
@@ -208,25 +309,27 @@ void	remove_head_quotes(t_tokens *head)
 		if (head->command[0] == '\'')
 			head->command = remove_single_quotes(head->command);
 		else if (head->command[0] == '"')
+		{
+			head->command = get_path_input(head->command,data);
 			head->command = remove_double_quotes(head->command);
+		}
 	}
 	else
 		return ;
 }
 
-
-void	remove_quotes(t_tokens *head)
+void	remove_quotes(t_tokens *head,t_data *data)
 {
-	//int i = 0;
+	char c_temp;
 	while (head != NULL)
 	{
-		if (is_there_quotes(head->command))
-		{
-			if (head->command[0] == '\'')
+		c_temp = check_quote(head->command);
+		if(c_temp != '\'')
+			head->command = get_path_input(head->command,data);
+		if(c_temp == '\'')
 			head->command = remove_single_quotes(head->command);
-		else if (head->command[0] == '"')
+		else if(c_temp == '"')
 			head->command = remove_double_quotes(head->command);
-		}
 		head = head->next;
 	}
 }
@@ -251,7 +354,7 @@ t_tokens	*get_tokens(t_data *data, char *str)
 		//remove_head_quotes(data->tokens_head); //remove the quotes only from the first token(command)
 		i++;
 	}
-	remove_quotes(data->tokens_head); //remove the quotes from all the tokens(commands)
+	remove_quotes(data->tokens_head,data); //remove the quotes from all the tokens(commands)
 	return (data->tokens_head);
 }
 
