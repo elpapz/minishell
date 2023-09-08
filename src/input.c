@@ -3,14 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   input.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: icaldas <icaldas@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/12 01:52:59 by marvin            #+#    #+#             */
-/*   Updated: 2023/08/12 01:52:59 by marvin           ###   ########.fr       */
+/*   Created: 2023/09/06 14:50:34 by icaldas           #+#    #+#             */
+/*   Updated: 2023/09/06 14:50:34 by icaldas          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+
+char *get_input(void)
+{
+	char *input;
+	char *temp;
+
+	temp = readline("\033[0;32mminishell $>\033[0m ");
+	input = ft_strtrim(temp," \t");
+	free(temp);
+	return (input);
+}
 
 bool	check_pipes(char *str, int i)
 {

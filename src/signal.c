@@ -1,5 +1,14 @@
-#define _POSIX_C_SOURCE >= 199309L
-#define _GNU_SOURCE
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signal.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: icaldas <icaldas@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/06 16:16:19 by icaldas           #+#    #+#             */
+/*   Updated: 2023/09/06 16:16:19 by icaldas          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../include/minishell.h"
 
@@ -27,7 +36,7 @@ void	dismiss_signal(int signum)
 	}
 }
 
-void init_signal(void)
+void	init_signal(void)
 {
 	struct sigaction	sa;
 

@@ -1,4 +1,95 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokens.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/09/06 16:16:58 by icaldas           #+#    #+#             */
+/*   Updated: 2023/09/08 06:26:48 by acanelas         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
+
+int	get_unquoted_size(char *str)
+{
+	int	start;
+	int	i;
+
+	i = 0;
+	if (str[i] == '"')
+	{
+		while (str[i] == '"')
+			i++;
+		start = i;
+		while (str[i] != '"')
+			i++;
+		return (i - start);
+	}
+	else if (str[i] == '\'')
+	{
+		while (str[i] == '\'')
+			i++;
+		start = i;
+		while (str[i] != '\'')
+			i++;
+		return (i - start);
+	}
+}
+
+char	*remove_single_quotes(char *str)
+{
+	int i;
+	int j;
+	char * quotes_free;
+
+	i = 0;
+	j = 0;
+	int size = get_unquoted_size(str);
+	//printf("%d\n", size);
+	quotes_free = malloc(sizeof(char) * size + 1);
+	while (str[i])
+	{
+		while (str[i] == '\'')
+			i++;
+		if (str[i] == '\0')
+			break ;
+		quotes_free[j] = str[i];
+		i++;
+		j++;
+	}
+	quotes_free[j] = '\0';
+	return (quotes_free);
+}
+
+//removes all the double quotes from the input(str)
+//returns the quote_free str malloced
+
+char	*remove_double_quotes(char *str)
+{
+	int i;
+	int j;
+	char *quotes_free;
+
+	i = 0;
+	j = 0;
+	int size = get_unquoted_size(str);
+	//printf("%d\n", size);
+	quotes_free = malloc(sizeof(char) * size + 1);
+	while (str[i])
+	{
+		while (str[i] == '"')
+			i++;
+		if (str[i] == '\0')
+			break ;
+		quotes_free[j] = str[i];
+		i++;
+		j++;
+	}
+	quotes_free[j] = '\0';
+	return (quotes_free);
+}
 
 t_type	is_there_token(char c)
 {
@@ -10,18 +101,42 @@ t_type	is_there_token(char c)
 		return (PIPE);
 	return (NORMAL);
 }
+/*
+void	add_token(t_tokens **head, char *str, t_type type)
+{
+	t_tokens	*new_token;
+	t_tokens	*temp;
+
+	new_token = malloc(sizeof(t_tokens));
+	if (!new_token)
+		return ;
+	new_token->command = ft_mllstrcpy(str);
+	new_token->type = type;
+	new_token->next = NULL;
+	if (!*head)
+		*head = new_token;
+	else
+	{
+		temp = *head;
+		while (temp->next)
+			temp = temp->next;
+		temp->next = new_token;
+	}
+	printf("tokens ->%s\n", new_token->command);
+}
+*/
 
 int add_token(t_tokens **head, char *str,t_type type)
 {
-    t_tokens *new_token = malloc(sizeof(t_tokens));
+    t_tokens *new_token;
 	t_tokens *temp;
+
+	new_token = malloc(sizeof(t_tokens));
     if (!new_token)
         return (-1);
-    //new_token->command = ft_strdup(str); //tambem dá com ft_strdup
-	new_token->command = str; //só é preciso dar free uma vez
+    new_token->command = ft_strdup(str); //tambem dá com ft_strdup
 	new_token->type = type;
     new_token->next = NULL;
-
     if (!*head)
         *head = new_token;
 	else
@@ -31,6 +146,7 @@ int add_token(t_tokens **head, char *str,t_type type)
 			temp = temp->next;
 		temp->next = new_token;
 	}
+	printf("token ->%s\n", new_token->command);
 	return (0);
 }
 //RDR_RD_IN
@@ -114,12 +230,13 @@ void	remove_quotes(t_tokens *head)
 		head = head->next;
 	}
 }
+
 t_tokens	*get_tokens(t_data *data, char *str)
 {
 	int	i;
 
 	i = 0;
-	while(str[i])
+	while (str[i])
 	{
 		while(str[i] == ' ' || str[i] == '\t')
 			i++;
@@ -129,6 +246,8 @@ t_tokens	*get_tokens(t_data *data, char *str)
 			i = get_word_until(str, i, &data->tokens_head);
 		if (i < 0)
 			return (NULL);
+		else if (str[i] == '\0')
+			break ;
 		//remove_head_quotes(data->tokens_head); //remove the quotes only from the first token(command)
 		i++;
 	}
@@ -136,55 +255,72 @@ t_tokens	*get_tokens(t_data *data, char *str)
 	return (data->tokens_head);
 }
 
+
+
 /*
-t_tokens *tokens_input(char *input,t_data *data)
+void	add_token(t_tokens **head, char *str, t_type type)
 {
-	t_tokens *temp;
-	t_type type;
-	char **command;
-	int i;
+	t_tokens	*new_token;
+	t_tokens	*temp;
+
+	new_token = malloc(sizeof(t_tokens));
+	if (!new_token)
+		return ;
+	new_token->command = ft_mllstrcpy(str);
+	new_token->type = type;
+	new_token->next = NULL;
+	if (!*head)
+		*head = new_token;
+	else
+	{
+		temp = *head;
+		while (temp->next)
+			temp = temp->next;
+		temp->next = new_token;
+	}
+	printf("tokens ->%s\n", new_token->command);
+}
+
+t_tokens	*tokens_input(char **command, t_data *data)
+{
+	t_tokens	*temp;
+	t_type		type;
+	char		**split_pipe;
+	int			i;
 
 	i = 0;
-	command = ft_split(input,' ');
 	temp = NULL;
 	type = NORMAL;
-	while(command[i])
+	while (command[i])
 	{
-		if(!ft_strchr(command[i],'>')
-			&& !ft_strchr(command[i],'<'))
+		if (!ft_strchr(command[i], '>')
+			&& !ft_strchr(command[i], '<'))
 		{
-			if(ft_strchr(command[i],'|'))
+			if (ft_strchr(command[i], '|'))
 			{
-				add_token(&temp,command[i],PIPE);
+				add_token(&temp, "|", PIPE);
 				type = NORMAL;
 			}
 			else
-				add_token(&temp,command[i],type);
-			if(type == RDR_RD_IN)
-				type = NORMAL;
+				add_token(&temp, command[i], type);
+			type = NORMAL;
 			i++;
 		}
 		else
 		{
-			if(!ft_strncmp(command[i],">>",3))
+			if (!ft_strncmp(command[i], ">>", 3))
 				type = RDR_AP_OUT;
-			else if(!ft_strncmp(command[i],"<<",3))
+			else if (!ft_strncmp(command[i], "<<", 3))
 				type = RDR_RD_IN;
-			else if(ft_strchr(command[i],'>'))
+			else if (ft_strchr(command[i], '>'))
 				type = RDR_OUT;
-			else if(ft_strchr(command[i],'<'))
+			else if (ft_strchr(command[i], '<'))
 				type = RDR_IN;
-			if(type == RDR_AP_OUT
-				|| type == RDR_OUT)
-				data->check_out = true;
-			if(type == RDR_RD_IN
-			|| type == RDR_IN)
-				data->check_in = true;
 			i++;
 		}
 	}
-	//free_strings(command);
-	free(input);
-	return temp;
+	free_strings(command);
+	return (temp);
 }
 */
+
