@@ -17,6 +17,7 @@
 # include <limits.h>
 # include <stdbool.h>
 # include <sys/errno.h>
+# include <sys/stat.h>
 
 # define MALLOC "minishell: Error Memory Allocation\n"
 # define ARGS "Invalid argument: ./minishell\n"
@@ -57,6 +58,7 @@ typedef struct s_varlst
 {
 	char			*var_name;
 	char			*var_value;
+	// bool			equal_char;
 	struct s_varlst	*next;
 }				t_varlst;
 
@@ -100,6 +102,7 @@ bool		check_exist_env(t_data *data, char *input);
 void		change_exist_env(t_data *data, char **cmd);
 bool		check_input_env(char *str);
 void		change_env(t_data *data, char **input);
+bool	check_input_env(char *str);
 
 /*************\
 |**--ERROR--**|
@@ -147,7 +150,7 @@ void		cntr_d(char *input, t_data **data);
 |**--REDIRECT--**|
 \****************/
 int			change_stdout(char *str, t_type type);
-void		change_stdin(char *str);
+bool		change_stdin(char *str);
 
 /**************\
 |**--SIGNAL--**|

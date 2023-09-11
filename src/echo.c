@@ -93,8 +93,6 @@ void	exec_echo(t_data *data, char **input)
 		}
 		else
 		{
-			//if (is_there_quotes(temp))
-				//final_quote_check(temp);
 			ft_printf("%s", temp);
 			if (input[i + 1])
 				write(STDOUT_FILENO, " ", 1);

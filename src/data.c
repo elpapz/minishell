@@ -10,57 +10,72 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+//#define _POSIX_C_SOURCE
+//#define _POSIX_C_SOURCE >= 199309L
+//#define _GNU_SOURCE
+
 #include "../include/minishell.h"
 
-t_statlst	*get_stat(int ac, char **av)
+t_varlst	*env_list(char *name, char *value)
+{
+	t_varlst	*new;
+
+	new = malloc(sizeof(t_varlst));
+	if (!new)
+		error(MALLOC, '\0');
+	new->var_name = name;
+	new->var_value = value;
+	new->next = NULL;
+	return (new);
+}
+
+t_statlst	*create_stat_list(int ac, char **av)
 {
 	t_statlst	*temp_stat;
 
 	temp_stat = malloc(sizeof(t_statlst));
 	if (!temp_stat)
-		error(MALLOC, NULL);
+		error(MALLOC, '\0');
 	temp_stat->ac = ac;
 	temp_stat->av = av;
 	temp_stat->next = NULL;
 	return (temp_stat);
 }
 
-t_varlst	*get_var(char **envp)
+char	**divide_envp(char *str)
 {
-	t_varlst	*new_var;
-	t_varlst	*head_var;
-	t_varlst	*temp_var;
-	int			num_strings;
-	char		**var;
+	char	**env_var;
+	int		i;
 
-	num_strings = 0;
-	head_var = NULL;
-	temp_var = NULL;
-	while (envp[num_strings])
+	i = 0;
+	env_var = malloc(sizeof(char *) * 2);
+	while (str[i] != '=')
+		i++;
+	env_var[0] = ft_substr(str, 0, i);
+	env_var[1] = ft_substr(str, i + 1, ft_strlen(str) - i);
+	return (env_var);
+}
+
+t_varlst	*fill_envp_list(char **envp)
+{
+	t_varlst	*head;
+	t_varlst	*temp;
+	char		**var_lines;
+	int			i;
+
+	var_lines = divide_envp(envp[0]);
+	head = env_list(var_lines[0], var_lines[1]);
+	i = 0;
+	temp = head;
+	while (envp[++i])
 	{
-		new_var = malloc(sizeof(t_varlst));
-		if (!new_var)
-			error(MALLOC, NULL);
-		var = ft_split(envp[num_strings], '=');
-		new_var->var_name = ft_mllstrcpy(var[0]);
-		if (!var[1])
-			new_var->var_value = ft_mllstrcpy("");
-		else
-			new_var->var_value = ft_mllstrcpy(var[1]);
-		new_var->next = NULL;
-		if (!head_var)
-		{
-			head_var = new_var;
-			temp_var = head_var;
-		}
-		else
-		{
-			temp_var->next = new_var;
-			temp_var = temp_var->next;
-		}
-		num_strings++;
+		free(var_lines);
+		var_lines = divide_envp(envp[i]);
+		temp->next = env_list(var_lines[0], var_lines[1]);
+		temp = temp->next;
 	}
-	return (head_var);
+	free(var_lines);
+	return (head);
 }
 
 t_data	*get_data(int ac, char **av, char **envp)
@@ -69,11 +84,12 @@ t_data	*get_data(int ac, char **av, char **envp)
 
 	temp_data = (t_data *)malloc(sizeof(t_data));
 	if (!temp_data)
-		error(MALLOC, NULL);
+		error(MALLOC, '\0');
 	temp_data->envp = envp;
-	temp_data->stat_head = get_stat(ac, av);
-	temp_data->var_head = get_var(envp);
+	temp_data->stat_head = create_stat_list(ac, av);
+	temp_data->var_head = fill_envp_list(envp);
 	temp_data->check_out = false;
 	temp_data->check_in = false;
+	temp_data->tokens_head = NULL;
 	return (temp_data);
 }

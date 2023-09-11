@@ -12,7 +12,7 @@
 
 #include "../include/minishell.h"
 
-extern volatile long long g_exit_status;
+extern volatile long long	g_exit_status;
 
 char	*check_command(char *command, char **path)
 {
@@ -41,7 +41,8 @@ char	*ft_getenv(const char *str, t_data *data)
 	temp_var = data->var_head;
 	while (temp_var)
 	{
-		if (!strncmp(temp_var->var_name, str, ft_strlen((char *)temp_var->var_name)))
+		if (!strncmp (temp_var->var_name, str,
+				ft_strlen((char *)temp_var->var_name)))
 			return (ft_mllstrcpy(temp_var->var_value));
 		temp_var = temp_var->next;
 	}
@@ -50,9 +51,10 @@ char	*ft_getenv(const char *str, t_data *data)
 
 void	ft_execve(char **command, t_data *data)
 {
-	char	*path;
-	char	*check;
-	char	**check_split;
+	char		*path;
+	char		*check;
+	char		**check_split;
+	struct stat	file_stat;
 
 	path = ft_getenv("PATH", data);
 	if (!path)
@@ -68,17 +70,36 @@ void	ft_execve(char **command, t_data *data)
 	if (!access(command[0], X_OK))
 		execve(command[0], command, NULL);
 	dup2(STDOUT_FILENO, 1);
-	if(command[0][0] == '.' && command[0][1] == '/')
+	if (access(command[0], F_OK) == -1)
 	{
-		g_exit_status = 126;
+		write(2, "minishell : command not found\n", 30);
+		g_exit_status = 127;
+		free_strings(command);
+		exit(g_exit_status);
+	}
+	if (access(command[0], X_OK) == -1)
+	{
 		perror("minishell");
+		g_exit_status = 126;
+		free_strings(command);
+		exit(g_exit_status);
+	}
+	else if (lstat(command[0], &file_stat) == 0 && ft_strchr(command[0], '/'))
+	{
+		if (S_ISDIR(file_stat.st_mode))
+		{
+			g_exit_status = 126;
+			write(2, "minishell : Is a directory\n", 28);
+			free_strings(command);
+			exit(g_exit_status);
+		}
 	}
 	else
 	{
-		g_exit_status = 127;
 		write(2, "minishell : command not found\n", 30);
+		g_exit_status = 127;
+		free_strings(command);
 	}
-	free_strings(command);
 	exit(g_exit_status);
 }
 
@@ -154,6 +175,8 @@ void	choose_exec(char **command, t_data *data)
 		exec_chdir(command);
 	else if (!strncmp(command[0], "env", 3))
 		print_env(data);
+	// else if(!strncmp(command[0],"echo",4))
+	// 	exec_echo(data);
 	else
 	{
 		pid = fork();
@@ -164,7 +187,7 @@ void	choose_exec(char **command, t_data *data)
 		}
 		else
 		{
-			int status;
+			int	status;
 			waitpid(pid, &status, 0);
 			g_exit_status = WEXITSTATUS(status);
 		}
@@ -207,8 +230,8 @@ void	exec_tokens(t_data *data)
 	pid_t		pid;
 	int			fd;
 	bool		check_pipe;
-	int temp_i;
-	int temp_o;
+	int			temp_i;
+	int			temp_o;
 
 	temp_i = dup(STDIN_FILENO);
 	temp_o = dup(STDOUT_FILENO);
@@ -232,14 +255,17 @@ void	exec_tokens(t_data *data)
 		}
 		else if (temp->type == RDR_OUT
 			|| temp->type == RDR_AP_OUT)
-			{
-				data->check_out = true;
-				temp->fd_out = change_stdout(temp->command, temp->type);
-			}
+		{
+			data->check_out = true;
+				// if(!change_stdout(temp->command, temp->type))
+				// 	return ;
+			temp->fd_out = change_stdout(temp->command, temp->type);
+		}
 		else if (temp->type == RDR_IN)
 		{
 			data->check_in = true;
-			change_stdin(temp->command);
+			if (!change_stdin(temp->command))
+				return ;
 		}
 		else if (temp->type == RDR_RD_IN)
 		{
@@ -274,7 +300,7 @@ void	exec_tokens(t_data *data)
 	if (!data->check_in && check_pipe)
 	{
 		dup2(temp_i, STDIN_FILENO);
-		int fd_teste = open(TEMP_FILE_OUT, O_RDONLY);
+		int	fd_teste = open(TEMP_FILE_OUT, O_RDONLY);
 		if (fd_teste == -1)
 			fd_teste = open(TEMP_FILE_OUT, O_CREAT | O_RDONLY);
 		dup2(fd_teste, STDIN_FILENO);

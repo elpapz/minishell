@@ -49,7 +49,7 @@ SRCS =	$(SRC_DIR)/data.c\
 		$(SRC_DIR)/echo.c \
 		$(SRC_DIR)/unset.c \
 		$(SRC_DIR)/redirect.c \
-		$(SRC_DIR)/tokens.c
+		$(SRC_DIR)/tokens.c \
 
 #ARQUIVOS .o
 OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
@@ -65,7 +65,7 @@ RM = rm -f
 MKDIR = mkdir -p
 
 #FLAGS
-FLAGS = -g -Werror -Wextra -Wall -lreadline
+FLAGS = -Werror -Wextra -Wall -lreadline
 OUTPUT = -o
 
 all: $(NAME)

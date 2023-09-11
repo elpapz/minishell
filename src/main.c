@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 14:52:28 by icaldas           #+#    #+#             */
-/*   Updated: 2023/09/08 08:29:12 by marvin           ###   ########.fr       */
+/*   Updated: 2023/09/11 05:56:26 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ int	get_len_pipes(char *input)
 	while (input[i])
 	{
 		if (input[i] == '|')
+			len++;
+		else if(input[i] == '<' || input[i] == '<')
 			len++;
 		i++;
 	}
@@ -57,13 +59,39 @@ char	*new_input(char *input)
 	new_input = malloc(((get_len_pipes(input) * 2) + 1 + ft_strlen(input)) * sizeof(char));
 	while (input[i_input])
 	{
-		if (input[i_input] == '|' && !check_closed_quotes(input,i_input))
+		if((input[i_input] == '<' && input[i_input + 1] == '<' && !check_closed_quotes(input,i_input))
+			|| (input[i_input] == '>' && input[i_input + 1] == '>' && !check_closed_quotes(input,i_input)))
+		{
+			new_input[i_new] = ' ';
+			new_input[i_new + 1] = input[i_input];
+			new_input[i_new + 2] = input[i_input];
+			new_input[i_new + 3] = ' ';
+			i_input++;
+			i_new += 3;
+		}
+		else if ((input[i_input] == '|' && !check_closed_quotes(input,i_input))
+			|| (input[i_input] == '>' && !check_closed_quotes(input,i_input))
+			|| (input[i_input] == '<' && !check_closed_quotes(input,i_input)))
 		{
 			new_input[i_new] = ' ';
 			new_input[i_new + 1] = input[i_input];
 			new_input[i_new + 2] = ' ';
 			i_new += 2;
 		}
+		// else if (input[i_input] == '<' && !check_closed_quotes(input,i_input))
+		// {
+		// 	new_input[i_new] = ' ';
+		// 	new_input[i_new + 1] = input[i_input];
+		// 	new_input[i_new + 2] = ' ';
+		// 	i_new += 2;
+		// }
+		// else if (input[i_input] == '>' && !check_closed_quotes(input,i_input))
+		// {
+		// 	new_input[i_new] = ' ';
+		// 	new_input[i_new + 1] = input[i_input];
+		// 	new_input[i_new + 2] = ' ';
+		// 	i_new += 2;
+		// }
 		else
 			new_input[i_new] = input[i_input];
 		i_new++;
@@ -216,10 +244,11 @@ char	**split_input(char *input, t_data *data)
 			token_count++;
 		}
 	}
-	//printf("%s\n", tokens[0]);
+	printf("%s\n", tokens[0]);
 	tokens[token_count] = NULL;
 	return (cut_quote(tokens,data));
 }
+
 
 //apenas para teste
 void print_tokens(t_data *data)
@@ -232,13 +261,81 @@ void print_tokens(t_data *data)
 	}
 }
 
+long long int	ft_atoll(const char *str)
+{
+	long long int			result;
+	int						sign;
+
+	result = 0;
+	sign = 1;
+	while ((*str > 8 && *str < 14) || *str == 32)
+		str++;
+	if (*str == 45 || *str == 43)
+	{
+		if (*str == 45)
+			sign = -1;
+		str++;
+	}
+	while (*str > 47 && *str < 58)
+	{
+		result = result * 10 + (*str - 48);
+		str++;
+	}
+	return ((long long int)result * sign);
+}
+
+int len_data(t_tokens *tokens)
+{
+	int i;
+
+	i = 0;
+	while(tokens)
+	{
+		tokens = tokens->next;
+		i++;
+	}
+	return i;
+}
+
+bool check_non_numeric(char *str)
+{
+	int i;
+
+	i = 0;
+	while(str[i])
+	{
+		if(i > 0)
+		{
+			if(!(str[i] >= '0' && str[i] <= '9'))
+				return true;
+		}
+		else
+		{
+			if(!(str[i] >= '0' && str[i] <= '9') && str[i] != '-' && str[i] != '+')
+				return true;
+		}
+		i++;
+	}
+	return false;
+}
+
+char	*get_input(void)
+{
+	char	*input;
+	char	*temp;
+
+	temp = readline("\033[0;32mminishell $>\033[0m ");
+	input = ft_strtrim(temp, " \t");
+	free (temp);
+	return (input);
+}
+
 int	main(int ac, char **av, char **envp)
 {
 	t_data	*data;
 	char	*input;
 	int		temp_stdout;
 	int		temp_stdin;
-	//char	**input_split;
 
 	if (ac > 1 && av)
 		error(ARGS, '\0');
@@ -258,14 +355,35 @@ int	main(int ac, char **av, char **envp)
 		{
 			add_history(input);
 			input = new_input(input);
-			//input_split = split_input(input, data);
 			data->tokens_head = get_tokens(data, input);
 			// print_tokens(data);
 			//printf("first token ->%s\n", data->tokens_head->command); //-- confirma que o primeiro comando está com bug
 			if(!strncmp(data->tokens_head->command, "exit", 4))
 			{
-				free_data(&data);
-				break ;
+				if(len_data(data->tokens_head) > 2)
+				{
+					free_data(&data);
+					write(2,"minishell: too many arguments\n",31);
+					exit(1);
+				}
+				else if(data->tokens_head->next)
+				{
+					long long int num_exit;
+					if(check_non_numeric(data->tokens_head->next->command))
+					{
+						write(2,"minishell: numeric argument required\n",38);
+						free_data(&data);
+						exit(2);
+					}
+					num_exit = ft_atoll(data->tokens_head->next->command);
+					free_data(&data);
+					exit((int)num_exit);
+				}
+				else
+				{
+					free_data(&data);
+					exit(0);
+				}
 			}
 			exec_tokens(data);
 			unlink(TEMP_FILE);

@@ -6,7 +6,7 @@
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 16:16:58 by icaldas           #+#    #+#             */
-/*   Updated: 2023/09/08 10:06:30 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/09/11 06:13:25 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,35 @@ int	get_unquoted_size(char *str, char quote)
 		i++;
 	}
 	return (len);
+}
 
+
+char	*cut_quotes_teste(char *input)
+{
+	int len;
+	char *output;
+	int output_index;
+	bool inside_single_quotes;
+	bool inside_double_quotes;
+	int i;
+
+	inside_double_quotes = false;
+	inside_single_quotes = false;
+	output_index = 0;
+	len = ft_strlen(input);
+	output = malloc(len + 1);
+	i = -1;
+	while(++i < len)
+	{
+		if (input[i] == '\'' && !inside_double_quotes)
+			inside_single_quotes = !inside_single_quotes;
+		else if (input[i] == '"' && !inside_single_quotes)
+			inside_double_quotes = !inside_double_quotes;
+		else
+			output[output_index++] = input[i];
+	}
+	output[output_index] = '\0';
+	return (output);
 }
 
 
@@ -127,8 +155,14 @@ int add_token(t_tokens **head, char *str,t_type type)
 
 	new_token = malloc(sizeof(t_tokens));
     if (!new_token)
+	{
+		//free(str);
         return (-1);
-    new_token->command = ft_strdup(str); //tambem dá com ft_strdup
+	}
+	if(!str)
+		new_token->command = NULL;
+	else
+    	new_token->command = ft_strdup(str); //tambem dá com ft_strdup
 	new_token->type = type;
     new_token->next = NULL;
     if (!*head)
@@ -140,10 +174,10 @@ int add_token(t_tokens **head, char *str,t_type type)
 			temp = temp->next;
 		temp->next = new_token;
 	}
-	//printf("token ->%s\n", new_token->command);
+	free(str);
 	return (0);
 }
-//RDR_RD_IN
+
 int	get_new_token(char *str, int i, t_tokens **head)
 {
 	int checker;
@@ -301,9 +335,6 @@ char	*get_path_input(char *input, t_data *data)
 
 void	remove_head_quotes(t_tokens *head,t_data *data)
 {
-	//int	i;
-
-	//i = 0;
 	if (is_there_quotes(head->command))
 	{
 		if (head->command[0] == '\'')
@@ -320,17 +351,65 @@ void	remove_head_quotes(t_tokens *head,t_data *data)
 
 void	remove_quotes(t_tokens *head,t_data *data)
 {
-	char c_temp;
 	while (head != NULL)
 	{
-		c_temp = check_quote(head->command);
-		if(c_temp != '\'')
+		if(head->command[0] != '\'')
 			head->command = get_path_input(head->command,data);
-		if(c_temp == '\'')
-			head->command = remove_single_quotes(head->command);
-		else if(c_temp == '"')
-			head->command = remove_double_quotes(head->command);
+		//mesmo se nao tiver quotes a funcao funciona , se caso n tiver quotes
+		//ele simplesmente nao muda nada na string
+		head->command = cut_quotes_teste(head->command);
 		head = head->next;
+	}
+}
+
+void remove_node(t_tokens **head, t_tokens *node_to_remove)
+{
+    if (*head == NULL || node_to_remove == NULL)
+        return; // Verificar se a lista ou o nó para remover são nulos
+
+    if (*head == node_to_remove)
+    {
+        // Se o nó a ser removido é o primeiro nó da lista
+        *head = (*head)->next; // Atualize o ponteiro da cabeça para o próximo nó
+        free(node_to_remove);  // Libere a memória do nó removido
+        return;
+    }
+
+    // Encontre o nó anterior ao nó a ser removido
+    t_tokens *prev = *head;
+    while (prev->next != NULL && prev->next != node_to_remove)
+    {
+        prev = prev->next;
+    }
+
+    // Se o nó a ser removido foi encontrado, ajuste os ponteiros
+    if (prev->next == node_to_remove)
+    {
+        prev->next = node_to_remove->next; // Atualize o ponteiro "next" do nó anterior
+        free(node_to_remove);              // Libere a memória do nó removido
+    }
+}
+
+void get_type_input(t_tokens *temp)
+{
+	t_type type_temp;
+	int len_string;
+
+	while(temp)
+	{
+		type_temp = NORMAL;
+		len_string = ft_strlen(temp->command);
+		if(temp->command[0] == '<' && temp->command[1] == '<' && len_string == 2)
+			temp->next->type = RDR_RD_IN;
+		else if(temp->command[0] == '<' && len_string == 1)
+			temp->next->type = RDR_IN;
+		else if(temp->command[0] == '>' && len_string == 1)
+			temp->next->type = RDR_OUT;
+		else if(temp->command[0] == '>' && temp->command[1] == '>' && len_string == 2)
+			temp->next->type = RDR_AP_OUT;
+		else if(temp->command[0] == '|' && len_string == 1)
+			temp->type = PIPE;
+		temp = temp->next;
 	}
 }
 
@@ -343,10 +422,10 @@ t_tokens	*get_tokens(t_data *data, char *str)
 	{
 		while(str[i] == ' ' || str[i] == '\t')
 			i++;
-		if (is_there_token(str[i]) != NORMAL)
-			i = get_new_token(str, i, &data->tokens_head);
-		else
-			i = get_word_until(str, i, &data->tokens_head);
+		// if (is_there_token(str[i]) != NORMAL)
+		// 	i = get_new_token(str, i, &data->tokens_head);
+		// else
+		i = get_word_until(str, i, &data->tokens_head);
 		if (i < 0)
 			return (NULL);
 		else if (str[i] == '\0')
@@ -355,7 +434,19 @@ t_tokens	*get_tokens(t_data *data, char *str)
 		i++;
 	}
 	remove_quotes(data->tokens_head,data); //remove the quotes from all the tokens(commands)
-	return (data->tokens_head);
+	get_type_input(data->tokens_head);
+	t_tokens *temp = NULL;
+	t_tokens *temp2;
+
+	temp2 = data->tokens_head;
+	while(temp2->next)
+	{
+		if(temp2->next->type == NORMAL || temp2->next->type == PIPE)
+			add_token(&temp,temp2->command,temp2->type);
+		temp2 = temp2->next;
+	}
+	add_token(&temp,temp2->command,temp2->type);
+	return (temp);
 }
 
 

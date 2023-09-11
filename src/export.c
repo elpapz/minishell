@@ -37,8 +37,13 @@ char	*copy_var(t_varlst *temp)
 	len_value = 0;
 	while (temp->var_name[len_var])
 		len_var++;
-	while (temp->var_value[len_value])
-		len_value++;
+	if (temp->var_value)
+	{
+		while (temp->var_value[len_value])
+			len_value++;
+	}
+	else
+		len_value = 0;
 	temp_envp = malloc(sizeof(char) * (len_var + len_value + 2));
 	len_var = 0;
 	while (temp->var_name[len_var])
@@ -46,7 +51,17 @@ char	*copy_var(t_varlst *temp)
 		temp_envp[len_var] = temp->var_name[len_var];
 		len_var++;
 	}
+	if (!temp->var_value)
+	{
+		temp_envp[len_var] = 0;
+		return (temp_envp);
+	}
 	temp_envp[len_var] = '=';
+	if (!(temp->var_value[0]))
+	{
+		temp_envp[len_var + 1] = 0;
+		return (temp_envp);
+	}
 	len_value = 0;
 	while (temp->var_value[len_value])
 	{
@@ -107,9 +122,12 @@ void	sort_string(char **str)
 void	print_export(t_data *data)
 {
 	char	**temp_str;
+	int		i;
 
+	i = 0;
 	temp_str = replicate_string(data);
 	sort_string(temp_str);
-	print_string(temp_str);
+	while (temp_str[i])
+		ft_printf("declare -x %s\n", temp_str[i++]);
 	free_strings(temp_str);
 }
