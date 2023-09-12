@@ -29,52 +29,6 @@ int	search_envp(t_data *data, char *cmd)
 	return (0);
 }
 
-/*
-char	*clean_str(char *str)
-{
-	int i = -1;
-	int	quotes_num;
-	int	j;
-	char *temp;
-
-	while (str[++i])
-	{
-		if (str[i] == '"' || str[i] == '\'')
-			quotes_num += 1;
-	}
-	//temp = malloc(sizeof(char) * i - quotes_num + 1);
-	i = -1;
-	j = 0;
-	while (str[++i])
-	{
-		if (str[i] == '"' || str[i] == '\'')
-			i++;
-		if (!str[i])
-			break ;
-		temp[j] = str[i];
-		j++;
-	}
-	temp[j] = '\0';
-	return (temp);
-}
-
-void	final_quote_check(char *str)
-{
-	int i = 0;
-	int j = 0;
-	char *temp;
-	if (str[i] == '\'' || str[i] == '"')
-		return ;
-	while (str[i] && str[i] != '\'' && str[i] != '"')
-		i++;
-	if ((str[i] == '\'' && str[i + 1] == '"') || (str[i] == '"' && str[i + 1] == '\''))
-		i++;
-	else if (str[i] == '\'' || str[i] == '"')
-	{
-		str = clean_str(str);
-	}
-}
-*/
 
 void	exec_echo(t_data *data, char **input)
 {
@@ -84,7 +38,6 @@ void	exec_echo(t_data *data, char **input)
 	i = 0;
 	while (input[++i])
 	{
-		//temp = ft_strtrim(input[i], "\"");
 		temp = ft_strdup(input[i]);
 		if (temp[0] == '$')
 		{

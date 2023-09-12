@@ -10,10 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-//#define _POSIX_C_SOURCE
-//#define _POSIX_C_SOURCE >= 199309L
-//#define _GNU_SOURCE
-
 #include "../include/minishell.h"
 
 t_varlst	*env_list(char *name, char *value)

@@ -6,7 +6,7 @@
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 14:52:28 by icaldas           #+#    #+#             */
-/*   Updated: 2023/09/12 07:28:54 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/09/12 08:12:31 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,11 @@ char	*new_input(char *input)
 	int		i_new;
 	char	*new_input;
 
+
 	i_input = 0;
 	i_new = 0;
+	int temp = (get_len_pipes(input) * 2) + ft_strlen(input);
+	printf("new input malloc: %d\n", temp);
 	new_input = malloc(((get_len_pipes(input) * 2) + 1 + ft_strlen(input)) * sizeof(char));
 	while (input[i_input])
 	{
@@ -97,9 +100,9 @@ char	*new_input(char *input)
 		i_new++;
 		i_input++;
 	}
-	new_input[i_new] = 0;
 	free(input);
-	//printf("new input ->%s\n", new_input);
+	new_input[i_new] = 0;
+	printf("new_input ->%s\n", new_input);
 	return (new_input);
 }
 

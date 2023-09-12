@@ -6,7 +6,7 @@
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 16:16:58 by icaldas           #+#    #+#             */
-/*   Updated: 2023/09/12 07:25:59 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/09/12 08:50:40 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,7 +185,7 @@ int add_token(t_tokens **head, char *str,t_type type)
 			temp = temp->next;
 		temp->next = new_token;
 	}
-	free(str);
+	//free(str);
 	return (0);
 }
 
