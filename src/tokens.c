@@ -6,7 +6,7 @@
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 16:16:58 by icaldas           #+#    #+#             */
-/*   Updated: 2023/09/11 06:13:25 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/09/12 06:27:13 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,34 @@ int	get_unquoted_size(char *str, char quote)
 	}
 	return (len);
 }
+
+int	count_closed_quotes(char *str)
+{
+	int	i;
+	int n_quotes;
+	
+	i = 0;
+	n_quotes = 0;
+	if (is_there_quotes == false)
+		return (n_quotes);
+	while (str[i])
+	{
+		if (str[i] == '\'')
+		{
+			i = get_next_quote(str, i, '\'');
+			n_quotes += 2;
+		}
+		else if(str[i] == '"')
+		{
+			i = get_next_quote(str, i, '"');
+			n_quotes += 2;
+		}
+		i++;
+	}
+	//ft_printf("number of quotes--> %d\n", quote_count);
+	return (n_quotes);
+}
+
 
 
 char	*cut_quotes_teste(char *input)
@@ -164,7 +192,9 @@ int add_token(t_tokens **head, char *str,t_type type)
 	else
     	new_token->command = ft_strdup(str); //tambem dá com ft_strdup
 	new_token->type = type;
+	new_token->n_quotes = count_closed_quotes(new_token->command);
     new_token->next = NULL;
+	//free(str);
     if (!*head)
         *head = new_token;
 	else
@@ -329,6 +359,7 @@ char	*get_path_input(char *input, t_data *data)
 		}
 	}
 	temp_input[len] = 0;
+	//printf("temp_input %s\n", temp_input);
 	return (temp_input);
 }
 
@@ -360,6 +391,85 @@ void	remove_quotes(t_tokens *head,t_data *data)
 		head->command = cut_quotes_teste(head->command);
 		head = head->next;
 	}
+}
+
+char	*deal_with_quotes(char *str, t_tokens *token)
+{
+	int i;
+	int j;
+	char	quote_type;
+	char *quotes_free;
+
+	i = -1;
+	j = 0;
+	int size = ft_strlen(str) - token->n_quotes; 
+	printf("size of unquoted--> %d\n", size);
+	quotes_free = malloc(sizeof(char) * ft_strlen(str) - token->n_quotes + 1);
+	ft_printf("before deal --> %s\n", str);
+	while (str[++i])
+	{
+		while (str[i] != '\'' && str[i] != '"')
+			quotes_free[j++] = str[i++];
+		quote_type = str[i];
+		while (str[i] == quote_type)
+			i++;
+		if (str[i] == '\0')
+			break ;
+		while (str[i] != quote_type)
+			quotes_free[j++] = str[i++];
+	}
+	free(str);
+	quotes_free[j] = '\0';
+	printf("after deal --> %s\n", quotes_free); // tem 4 comentarios, ou seja é igual a 25 linhas(norm ok)
+	return (quotes_free);
+}
+
+void	take_away_quotes(t_tokens *head, t_data *data)
+{
+	//int i = 0;
+	//if (is_there_quotes(head->command) == true)
+	//{
+		//ft_printf("antes do deal\n");
+		while (head != NULL)
+		{
+			if (is_there_quotes(head->command))
+			{
+				//free(head->command);
+				if(head->command[0] != '\'')
+					head->command = get_path_input(head->command,data);
+				head->command = deal_with_quotes(head->command, head);
+			}
+			//ft_printf("depois do deal --> %s\n", head->command);
+			head = head->next;			
+		}
+		//head = head->next;
+	//}
+}
+
+
+
+t_tokens	*get_tokens(t_data *data, char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		while(str[i] == ' ' || str[i] == '\t')
+			i++;
+		if (is_there_token(str[i]) != NORMAL)
+			i = get_new_token(str, i, &data->tokens_head);
+		else
+			i = get_word_until(str, i, &data->tokens_head);
+		if (i < 0)
+			return (NULL);
+		else if (str[i] == '\0')
+			break ;
+		//remove_head_quotes(data->tokens_head); //remove the quotes only from the first token(command)
+		i++;
+	}
+	take_away_quotes(data->tokens_head, data); //remove the quotes from all the tokens(commands)
+	return (data->tokens_head);
 }
 
 void remove_node(t_tokens **head, t_tokens *node_to_remove)
@@ -412,7 +522,7 @@ void get_type_input(t_tokens *temp)
 		temp = temp->next;
 	}
 }
-
+/*
 t_tokens	*get_tokens(t_data *data, char *str)
 {
 	int	i;
@@ -448,7 +558,7 @@ t_tokens	*get_tokens(t_data *data, char *str)
 	add_token(&temp,temp2->command,temp2->type);
 	return (temp);
 }
-
+*/
 
 
 /*

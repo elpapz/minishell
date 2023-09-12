@@ -43,6 +43,7 @@ typedef struct s_tokens
 {
 	int				fd_out;
 	char			*command;
+	int				n_quotes;
 	t_type			type;
 	struct s_tokens	*next;
 }				t_tokens;
@@ -86,7 +87,7 @@ t_data		*get_data(int ac, char **av, char **envp);
 char 		*get_path_input(char *input,t_data *data);
 char		*get_path(char *input, int *i);
 int			get_len_path(char *input, t_data *data);
-
+t_tokens	*get_tokens2(t_data *data, char *str);
 
 
 /************\

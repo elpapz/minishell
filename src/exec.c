@@ -175,8 +175,8 @@ void	choose_exec(char **command, t_data *data)
 		exec_chdir(command);
 	else if (!strncmp(command[0], "env", 3))
 		print_env(data);
-	// else if(!strncmp(command[0],"echo",4))
-	// 	exec_echo(data);
+	else if(!strncmp(command[0],"echo",4))
+	 	exec_echo(data, command);
 	else
 	{
 		pid = fork();
@@ -295,6 +295,7 @@ void	exec_tokens(t_data *data)
 		temp = temp->next;
 	}
 	command[i] = NULL;
+	//print_string(command);
 	if (!data->check_out)
 		dup2(temp_o, STDOUT_FILENO);
 	if (!data->check_in && check_pipe)

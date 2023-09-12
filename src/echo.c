@@ -84,7 +84,8 @@ void	exec_echo(t_data *data, char **input)
 	i = 0;
 	while (input[++i])
 	{
-		temp = ft_strtrim(input[i], "\"");
+		//temp = ft_strtrim(input[i], "\"");
+		temp = ft_strdup(input[i]);
 		if (temp[0] == '$')
 		{
 			if (search_envp(data, temp)

@@ -6,7 +6,7 @@
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 14:52:28 by icaldas           #+#    #+#             */
-/*   Updated: 2023/09/11 05:56:26 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/09/12 06:25:23 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -356,7 +356,7 @@ int	main(int ac, char **av, char **envp)
 			add_history(input);
 			input = new_input(input);
 			data->tokens_head = get_tokens(data, input);
-			// print_tokens(data);
+			//print_tokens(data);
 			//printf("first token ->%s\n", data->tokens_head->command); //-- confirma que o primeiro comando está com bug
 			if(!strncmp(data->tokens_head->command, "exit", 4))
 			{
