@@ -6,7 +6,7 @@
 /*   By: acanelas <acanelas@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 16:16:58 by icaldas           #+#    #+#             */
-/*   Updated: 2023/09/12 06:27:13 by acanelas         ###   ########.fr       */
+/*   Updated: 2023/09/12 07:25:59 by acanelas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,15 @@
 
 extern volatile long long g_exit_status;
 
-int	get_unquoted_size(char *str, char quote)
+t_type	is_there_token(char c)
 {
-	int	len;
-	int	i;
-
-	i = 0;
-	len = 0;
-	while (str[i])
-	{
-		if (str[i] != quote)
-			len++;
-		i++;
-	}
-	return (len);
+	if (c == '<')
+		return (RDR_IN);
+	if (c == '>')
+		return (RDR_OUT);
+	if (c == '|')
+		return (PIPE);
+	return (NORMAL);
 }
 
 int	count_closed_quotes(char *str)
@@ -53,12 +48,11 @@ int	count_closed_quotes(char *str)
 		}
 		i++;
 	}
-	//ft_printf("number of quotes--> %d\n", quote_count);
 	return (n_quotes);
 }
 
 
-
+/*
 char	*cut_quotes_teste(char *input)
 {
 	int len;
@@ -140,17 +134,8 @@ char	*remove_double_quotes(char *str)
 	quotes_free[j] = '\0';
 	return (quotes_free);
 }
+*/
 
-t_type	is_there_token(char c)
-{
-	if (c == '<')
-		return (RDR_IN);
-	if (c == '>')
-		return (RDR_OUT);
-	if (c == '|')
-		return (PIPE);
-	return (NORMAL);
-}
 /*
 void	add_token(t_tokens **head, char *str, t_type type)
 {
@@ -183,18 +168,14 @@ int add_token(t_tokens **head, char *str,t_type type)
 
 	new_token = malloc(sizeof(t_tokens));
     if (!new_token)
-	{
-		//free(str);
         return (-1);
-	}
 	if(!str)
 		new_token->command = NULL;
 	else
-    	new_token->command = ft_strdup(str); //tambem dá com ft_strdup
+    	new_token->command = ft_strdup(str);
 	new_token->type = type;
 	new_token->n_quotes = count_closed_quotes(new_token->command);
     new_token->next = NULL;
-	//free(str);
     if (!*head)
         *head = new_token;
 	else
@@ -276,6 +257,7 @@ char	*get_path(char *input, int *i)
 	temp[len] = '\0';
 	return (temp);
 }
+
 int	get_len_path(char *input, t_data *data)
 {
 	int		len;
@@ -363,7 +345,7 @@ char	*get_path_input(char *input, t_data *data)
 	return (temp_input);
 }
 
-
+/*
 void	remove_head_quotes(t_tokens *head,t_data *data)
 {
 	if (is_there_quotes(head->command))
@@ -392,6 +374,7 @@ void	remove_quotes(t_tokens *head,t_data *data)
 		head = head->next;
 	}
 }
+*/
 
 char	*deal_with_quotes(char *str, t_tokens *token)
 {
@@ -426,24 +409,16 @@ char	*deal_with_quotes(char *str, t_tokens *token)
 
 void	take_away_quotes(t_tokens *head, t_data *data)
 {
-	//int i = 0;
-	//if (is_there_quotes(head->command) == true)
-	//{
-		//ft_printf("antes do deal\n");
 		while (head != NULL)
 		{
 			if (is_there_quotes(head->command))
 			{
-				//free(head->command);
 				if(head->command[0] != '\'')
 					head->command = get_path_input(head->command,data);
 				head->command = deal_with_quotes(head->command, head);
 			}
-			//ft_printf("depois do deal --> %s\n", head->command);
-			head = head->next;			
+			head = head->next;	
 		}
-		//head = head->next;
-	//}
 }
 
 
@@ -465,13 +440,12 @@ t_tokens	*get_tokens(t_data *data, char *str)
 			return (NULL);
 		else if (str[i] == '\0')
 			break ;
-		//remove_head_quotes(data->tokens_head); //remove the quotes only from the first token(command)
 		i++;
 	}
-	take_away_quotes(data->tokens_head, data); //remove the quotes from all the tokens(commands)
+	take_away_quotes(data->tokens_head, data);
 	return (data->tokens_head);
 }
-
+/*
 void remove_node(t_tokens **head, t_tokens *node_to_remove)
 {
     if (*head == NULL || node_to_remove == NULL)
@@ -522,6 +496,7 @@ void get_type_input(t_tokens *temp)
 		temp = temp->next;
 	}
 }
+*/
 /*
 t_tokens	*get_tokens(t_data *data, char *str)
 {
